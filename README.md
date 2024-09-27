@@ -104,6 +104,18 @@ Response:
 }
 
 ```
+## JWT Authentication in API Requests
+All endpoints that require authentication use JWT as the prefix for the Authorization header instead of the default Bearer.
+- n your requests, use this format:
+```
+authorization: JWT <access_token>
+```
+For example:
+
+```
+authorization: JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ...
+```
+
 ## Item Endpoints
 All the item endpoints require authentication. Include the JWT access token in the Authorization header for the requests.
 1. Create Item
@@ -180,3 +192,6 @@ To run unit tests for the application, use the following command:
 python manage.py test
 
 ```
+
+## Logging
+Logging is configured to capture API usage, errors, and debugging information. Log files are stored in debug.log within the project directory.
