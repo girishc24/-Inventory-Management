@@ -1,13 +1,15 @@
 # Simple Inventory Management System using Django Rest Framework
 
 
-Creating an API for a Simple Inventory Management System using Django Rest Framework with all the necessary functionalities.
+This project provides a backend API for an Inventory Management System using Django Rest Framework (DRF), JWT-based authentication, PostgreSQL for the database, and Redis for caching. The API supports CRUD operations on inventory items, user authentication, and token-based access control.
 
 ## Prerequisites
 
 - Python (version 3.x recommended)
 - Django
 - Django REST Framework
+- Redis (for caching)
+- PostgreSQL
 
 
 ## Setup Instructions
@@ -40,38 +42,141 @@ With the virtual environment activated, install the required dependencies using 
 ```
 pip install -r requirements.txt
 ```
-### 4. Database setup
+### 4. Configure PostgreSQL
+Create a PostgreSQL database and update DATABASES settings in settings.py:
+```
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'your_db_name',
+        'USER': 'your_db_user',
+        'PASSWORD': 'your_db_password',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
+}
+
+```
+### 5. Run database migrations
 Before running the application, set up the database by running the migrations:
 ```
 python manage.py makemigrations
 python manage.py migrate
 ```
-### 5. Run the development server
+### 6. Set up Redis
+Ensure Redis is running on localhost:6379. You can either install Redis manually or use Docker:
+```
+docker run --name redis -p 6379:6379 -d redis
+
+```
+### 7. Create a superuser
+```
+Create a superuser
+```
+### 8. Run the development server
 Start the Django development server to test the application locally:
 ```
 python manage.py runserver
 ```
 You can now access the application at http://localhost:8000.
 
-## Docker Setup
-The repository includes Docker files (Dockerfile and docker-compose.yml) for containerizing the application. Follow these steps to set up and run the application using Docker:
 
-### 1. Build and Run the Docker Container
-To build the Docker image and run the container, use Docker Compose:
+## API Documentation
+Authentication
+- Login to get JWT tokens
+- Method POST
 ```
-docker-compose up --build
+http://127.0.0.1:8000/auth/jwt/create/
 ```
-This command will build the Docker image according to the Dockerfile and start the Django development server inside a Docker container. The application will be accessible at http://localhost:8000.
+Request body:
+```
+{
+  "username": "your_username",
+  "password": "your_password"
+}
 
-### 2. Stop the Docker Container
-To stop the running Docker containers, use the following command:
 ```
-docker-compose down
+Response:
 ```
+{
+  "refresh": "your_refresh_token",
+  "access": "your_access_token"
+}
 
-# POSTMAN COLLECTION API'S
 ```
-https://elements.getpostman.com/redirect?entityId=36170112-334b3139-0e27-42d1-b48d-10b83bb08ec3&entityType=collection
+## Item Endpoints
+All the item endpoints require authentication. Include the JWT access token in the Authorization header for the requests.
+1. Create Item
+- POST /items/
+- Request body:
 ```
+{
+  "name": "Item Name",
+  "description": "Item Description"
+}
+```
+Response:
+```
+{
+  "id": 1,
+  "name": "Item Name",
+  "description": "Item Description"
+}
+```
+2. Get All Items
+- GET /items/
+- Response
+```
+[
+  {
+    "id": 1,
+    "name": "Item Name",
+    "description": "Item Description"
+  },
+  {
+    "id": 2,
+    "name": "Another Item",
+    "description": "Another Description"
+  }
+]
+```
+3.  Get Single Item
+- GET /items/{item_id}/
+- Response:
+```
+{
+  "id": 1,
+  "name": "Item Name",
+  "description": "Item Description"
+}
+```
+4. Update Item
+- PUT /items/{item_id}/
+- Request body:
+```
+{
+  "name": "Updated Item Name",
+  "description": "Updated Description"
+}
+```
+- Responce 
+```
+{
+  "name": "Updated Item Name",
+  "description": "Updated Description"
+}
+```
+5. Delete Item
+- DELETE /items/{item_id}/
+- Response:
+```
+{
+  "message": "Item deleted successfully"
+}
+```
+## Testing
+To run unit tests for the application, use the following command:
+```
+python manage.py test
 
-
+```
